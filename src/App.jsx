@@ -1,9 +1,9 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Container, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import config from '../config.js';
 
-const API_WEATHER = `http://api.weatherapi.com/v1/current.json?key=671315356f5e4ab6b1903516240506
-&lang=es&q=`;
+const API_WEATHER = `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&lang=es&q=`;
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -47,9 +47,29 @@ export default function App() {
         conditionText: data.current.condition.text,
         icon: data.current.condition.icon,
       });
+
+      // Enviar los datos al backend
+      const backendRes = await fetch('http://localhost:5173/weather', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          city: data.location.name,
+          country: data.location.country,
+          temperature: data.current.temp_c,
+          conditionText: data.current.condition.text,
+          icon: data.current.condition.icon
+        })
+      });
+
+      if (!backendRes.ok) {
+        throw new Error('Error al guardar la información en el backend');
+      }
+
     } catch (error) {
       console.log(error);
-      setError({ error: true, message: error.message });
+      setError({ error: true, message: error.message || "Error desconocido" });
     } finally {
       setLoading(false);
     }
