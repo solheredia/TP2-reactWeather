@@ -1,3 +1,4 @@
+import axios from "axios";
 import { LoadingButton } from "@mui/lab";
 import { Box, Container, TextField, Typography } from "@mui/material";
 import { useState } from "react";
@@ -30,7 +31,7 @@ export default function App() {
     try {
       if (!city.trim()) throw { message: "El campo ciudad es obligatorio" };
 
-      const res = await fetch(API_WEATHER + city);
+      const res = await axios.get(API_WEATHER + city);
       const data = await res.json();
 
       if (data.error) {
@@ -49,21 +50,15 @@ export default function App() {
       });
 
       // Enviar los datos al backend
-      const backendRes = await fetch('http://localhost:5173/weather', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          city: data.location.name,
-          country: data.location.country,
-          temperature: data.current.temp_c,
-          conditionText: data.current.condition.text,
-          icon: data.current.condition.icon
-        })
+      const backendRes = await axios.post('http://localhost:5173/weather', {
+        city: data.location.name,
+        country: data.location.country,
+        temperature: data.current.temp_c,
+        conditionText: data.current.condition.text,
+        icon: data.current.condition.icon
       });
 
-      if (!backendRes.ok) {
+      if (!backendRes.status === 201) {
         throw new Error('Error al guardar la información en el backend');
       }
 

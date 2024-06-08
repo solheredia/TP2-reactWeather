@@ -15,6 +15,3 @@ app.use(cors());
 app.use(express.json());
 
 
-const PORT = config.port || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
