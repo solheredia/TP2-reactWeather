@@ -1,35 +1,23 @@
 import express from 'express';
-import Weather from './models/Weather.js';
+import Weather from '../models/Weather.js';
 
 const router = express.Router();
 
 // Post a new weather search
 router.post('/weather', async (req, res) => {
-  const { city, country, temperature, conditionText, icon } = req.body;
+  const { city, country } = req.body;
 
   try {
     const newWeather = new Weather({
       city,
-      country,
-      temperature,
-      conditionText,
-      icon
+      country
     });
 
-    const savedWeather = await newWeather.save();
-    res.status(201).json(savedWeather);
+    await newWeather.save();
+    res.status(201).send('Informacion guardada en la base de datos');
   } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// Get all weather searches
-router.get('/weather', async (req, res) => {
-  try {
-    const weathers = await Weather.find();
-    res.json(weathers);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error.message);
+    res.status(500).send('Error al guardar los datos');
   }
 });
 

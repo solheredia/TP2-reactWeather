@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import config from '../config';
+import config from '../config.js';
 dotenv.config();
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(config.mongoUri, {
+        await mongoose.connect(config.mongoUri.uri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        console.log(`MongoDB Connected`);
     } catch (error) {
+
         console.error(`Error: ${error.message}`);
     }
 };
